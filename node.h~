@@ -1,0 +1,21 @@
+#ifndef NODE_H
+#define NODE_H
+#include <iostream>
+using namespace std;
+
+class node {
+ public:
+  node();
+  ~node();
+  void setValue(char);
+  void setNext(node*);
+  void setPrevious(node*);
+  node* getNext();
+  node* getPrevious();
+  char getValue();
+ private:
+  char value;
+  node* next;
+  node* previous;
+};
+#endif

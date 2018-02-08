@@ -1,0 +1,36 @@
+#include "node.h"
+
+node::node() {
+  next = NULL;
+  previous = NULL;
+}
+
+node::~node() {
+  delete &value;
+  next = NULL;
+  previous = NULL;
+}
+
+void node::setValue(char newValue) {
+  value = newValue;
+}
+
+void node::setNext(node* newNext) {
+  next = newNext;
+}
+
+void node::setPrevious(node* newPrevious) {
+  previous = newPrevious;
+}
+
+node* node::getNext() {
+  return next;
+}
+
+node* node::getPrevious() {
+  return previous;
+}
+
+char node::getValue() {
+  return value;
+}
