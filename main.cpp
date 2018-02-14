@@ -42,48 +42,68 @@ void add (char* newChar, vector<char> &output) {
   precedence['/'] = 3;
   precedence['^'] = 4;
   for (int i = 0; i < 16; i++) {
-    cout << newChar[i] << endl;
     if(isdigit(newChar[i])) {
       output.push_back(newChar[i]);
-    }//after here the function should end and move on to the next char
+    }
     if (isdigit(newChar[i]) == false) {
-      if (head == NULL) {
-	head->setValue(newChar[i]);//this is causing a seg fault
+      debug();
+      if (head->getValue() == NULL) {
+	debug();
+	head->setValue(newChar[i]);
+	debug();
       }
-      node* current = head;
-      cout << current->getValue() << endl;
-	while (precedence[current->getValue()] >= precedence[newChar[i]] && newChar[i] != '(') {
-	  debug();
+      else if (head->getValue() != NULL) {
+	node* current;
+	current->setValue(newChar[i]);
+	if (precedence[current->getValue()] >= precedence[newChar[i]] && newChar[i] != '(') {
 	  node* setOut = new node();
 	  setOut->setValue(newChar[i]);
 	  current->setRight(setOut);
-	  current = goToEnd();
-      }
-      if (newChar[i] == '(') {
-	current = goToEnd();
-	node* newNode = new node();
-	newNode->setValue(newChar[i]);
-	current->setRight(newNode);
-      }
-      if (newChar[i] == ')') {
-	current = goToEnd();
-	while (current->getValue() != '(') {
-	  output.push_back(current->getValue());
-	  current = current->getLeft();
+	  current->setPrev(goToEnd());
+	  goToEnd()->setRight(current);
 	}
-	//pop out the left bracket and get rid of the right bracket
+	else if (newChar[i] == '(') {
+	  current = goToEnd();
+	  node* newNode = new node();
+	  newNode->setValue(newChar[i]);
+	  current->setRight(newNode);
+	}
+	else if (newChar[i] == ')') {
+	  current = goToEnd();
+	  while (current->getValue() != '(') {
+	    output.push_back(current->getValue());
+	    current = current->getLeft();
+	  }
+	  //pop out the left bracket and get rid of the right bracket
+	}
+      }   
+    }    
+  }
+  while (head->getRight() != NULL) {
+    debug();
+    node* end;
+    end = goToEnd();
+    output.push_back(end->getValue());
+    node* remove;
+    if(head != end) {
+      remove = head;
+      while (remove->getRight() != end) {
+	remove = remove->getRight();
       }
-      while(head->getRight() != NULL) {
-	//push out the operator onto the stack
-      }
+      remove->setRight(NULL);
     }
   }
+  // if (head->getRight() == NULL) {
+  cout << head->getValue() << endl;
+    output.push_back(head->getValue());
+    //}
 }
 
 void print (vector<char> output) {//pass in a vector
   for (vector<char>::iterator it = output.begin(); it != output.end(); it++) {
-    cout << *it << endl;
+    cout << *it;
   }
+  cout << endl;
 }
 
 void debug() {
@@ -95,12 +115,8 @@ void debug() {
 
 node* goToEnd() {
   node* current = head;
-  if (current == NULL) {//this statement is a bit redundent
-    return current;
-  }
-  if (current->getRight() != NULL) {
+  while (current->getRight() != NULL) {
     current = current->getRight();
     }
   return current;
 }
-# shuntingYard
