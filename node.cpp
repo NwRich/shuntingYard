@@ -1,14 +1,16 @@
 #include "node.h"
 
 node::node() {
-  next = NULL;
-  previous = NULL;
+  right = NULL;
+  left = NULL;
+  prev = NULL;
 }
 
 node::~node() {
   delete &value;
-  next = NULL;
-  previous = NULL;
+  right = NULL;
+  prev = NULL;
+  left = NULL;
 }
 
 void node::setValue(char newValue) {
@@ -16,19 +18,26 @@ void node::setValue(char newValue) {
 }
 
 void node::setRight(node* newNext) {
-  next = newNext;
+  right = newNext;
 }
 
 void node::setLeft(node* newPrevious) {
-  previous = newPrevious;
+  left = newPrevious;
 }
 
+void node::setPrev(node* newPrev) {
+  prev = newPrev;
+}
+
+node* node::getPrev() {
+  return prev;
+}
 node* node::getRight() {
-  return next;
+  return right;
 }
 
 node* node::getLeft() {
-  return previous;
+  return left;
 }
 
 char node::getValue() {

@@ -10,12 +10,15 @@ class node {
   void setValue(char);
   void setRight(node*);
   void setLeft(node*);
+  void setPrev(node*);
+  node* getPrev();
   node* getRight();
   node* getLeft();
   char getValue();
  private:
   char value;
-  node* next;
-  node* previous;
+  node* right;
+  node* left;
+  node* prev;
 };
 #endif

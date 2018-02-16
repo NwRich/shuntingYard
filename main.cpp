@@ -6,34 +6,26 @@
 #include <vector>
 
 using namespace std;
+node* head;
 void add(char* newChar, vector<char> &output);
 void print (vector<char> output);//pass in a vector
 node* goToEnd();
 void debug();
-node* head;
+node* push(node* &head, char newChar);
+//node* head;
 int main () {
   bool working = true;
   char* input = new char[16];
   vector<char> output;
-  while (working == true) {
-    cout << "add, list, quit" << endl;
-    cin >> input;
-    cin.get();
-    if (strcmp(input, "add") == 0) {
-      char* newChar = new char[32];
-      cin.get(newChar,32);
-      cin.get();
-      add(newChar,output);
-    }
-    if (strcmp(input, "list") == 0) {
-      print(output);//pass in a vector
-    }
-    if (strcmp(input, "quit") == 0) {
-      working = false;
-    }
-  }
+  cout << "put in an equation" << endl;
+  char* newChar = new char[32];
+  cin.get(newChar,32);
+  cin.get();
+  add(newChar,output);
+  print(output);//pass in a vector
   return 0;
 }
+
 void add (char* newChar, vector<char> &output) {
   map<char, int> precedence;
   precedence['+'] = 2;
@@ -42,61 +34,80 @@ void add (char* newChar, vector<char> &output) {
   precedence['/'] = 3;
   precedence['^'] = 4;
   for (int i = 0; i < 16; i++) {
+    node* current = new node();
+    current->setValue(newChar[i]);
     if(isdigit(newChar[i])) {
       output.push_back(newChar[i]);
     }
-    if (isdigit(newChar[i]) == false) {
-      debug();
-      if (head->getValue() == NULL) {
-	debug();
-	head->setValue(newChar[i]);
-	debug();
+    else if(current->getValue() == '(' || current->getValue() == ')') { 
+      if (newChar[i] == '(') {
+	push(head, current->getValue());//push to the stack
       }
-      else if (head->getValue() != NULL) {
-	node* current;
-	current->setValue(newChar[i]);
-	if (precedence[current->getValue()] >= precedence[newChar[i]] && newChar[i] != '(') {
-	  node* setOut = new node();
-	  setOut->setValue(newChar[i]);
-	  current->setRight(setOut);
-	  current->setPrev(goToEnd());
-	  goToEnd()->setRight(current);
+      else {
+	while (goToEnd()->getValue() != '(' || goToEnd()->getValue() != ')') {
+	  output.push_back(goToEnd()->getValue());
+	  node* end = goToEnd();
+	  end->getLeft()->setRight(NULL);
+	  delete end;
 	}
-	else if (newChar[i] == '(') {
-	  current = goToEnd();
-	  node* newNode = new node();
-	  newNode->setValue(newChar[i]);
-	  current->setRight(newNode);
+	node* end = goToEnd();
+	if (end->getLeft() != NULL) {
+	  end->getLeft()->setRight(NULL);
+	  delete end;
 	}
-	else if (newChar[i] == ')') {
-	  current = goToEnd();
-	  while (current->getValue() != '(') {
-	    output.push_back(current->getValue());
-	    current = current->getLeft();
+	else {
+	  head = NULL;
+	}
+      }
+    }
+    else {
+      if (head != NULL) {
+	while ((precedence[goToEnd()->getValue()] > precedence[current->getValue()]) ||
+	       (precedence[goToEnd()->getValue()] == precedence[current->getValue()] &&
+		goToEnd()->getValue() != '(')) {//check asscoiativity
+	  output.push_back(goToEnd()->getValue());
+	  node* end = goToEnd();
+	  if (end->getLeft() != NULL) {
+	    end->getLeft()->setRight(NULL);
+	    delete end;
 	  }
-	  //pop out the left bracket and get rid of the right bracket
+	  else {
+	    head = NULL;
+	    break;
+	  }
 	}
-      }   
-    }    
-  }
-  while (head->getRight() != NULL) {
-    debug();
-    node* end;
-    end = goToEnd();
-    output.push_back(end->getValue());
-    node* remove;
-    if(head != end) {
-      remove = head;
-      while (remove->getRight() != end) {
-	remove = remove->getRight();
       }
-      remove->setRight(NULL);
+      push(head, current->getValue());
     }
   }
-  // if (head->getRight() == NULL) {
-  cout << head->getValue() << endl;
-    output.push_back(head->getValue());
-    //}
+  while (head != NULL) {
+    output.push_back(goToEnd()->getValue());
+    node* end = goToEnd();
+    if (end->getLeft() != NULL) {
+      end->getLeft()->setRight(NULL);
+      delete end;
+    }
+    else {
+      head = NULL;
+    }
+  }
+}
+
+node* push (node* &head, char newChar) {
+  node* node1;
+  node1->setValue(newChar);
+  if (head == NULL) {
+    head = node1;
+    head->setRight(NULL);
+    node1->setLeft(NULL);
+  }
+  else {
+    node* endNode = goToEnd();
+    endNode->setRight(node1);
+    node1->setRight(NULL);
+    node1->setLeft(endNode);
+  }
+  return head;
 }
 
 void print (vector<char> output) {//pass in a vector
