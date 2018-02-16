@@ -7,10 +7,7 @@ node::node() {
 }
 
 node::~node() {
-  delete &value;
-  right = NULL;
-  prev = NULL;
-  left = NULL;
+  value = NULL;
 }
 
 void node::setValue(char newValue) {

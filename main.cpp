@@ -33,39 +33,30 @@ void add (char* newChar, vector<char> &output) {
   precedence['*'] = 3;
   precedence['/'] = 3;
   precedence['^'] = 4;
+  map<char, int> assoc;
+  assoc['^'] = 2;
+  assoc['-'] = 1;
+  assoc['+'] = 1;
+  assoc['*'] = 1;
+  assoc['/'] = 1;
   for (int i = 0; i < 16; i++) {
-    node* current = new node();
-    current->setValue(newChar[i]);
-    if(isdigit(newChar[i])) {
-      output.push_back(newChar[i]);
-    }
-    else if(current->getValue() == '(' || current->getValue() == ')') { 
-      if (newChar[i] == '(') {
-	push(head, current->getValue());//push to the stack
+    if (newChar[i] != NULL) {
+      node* current = new node();
+      current->setValue(newChar[i]);
+      if(isdigit(newChar[i])) {
+	output.push_back(newChar[i]);
       }
-      else {
-	while (goToEnd()->getValue() != '(' || goToEnd()->getValue() != ')') {
-	  output.push_back(goToEnd()->getValue());
-	  node* end = goToEnd();
-	  end->getLeft()->setRight(NULL);
-	  delete end;
-	}
-	node* end = goToEnd();
-	if (end->getLeft() != NULL) {
-	  end->getLeft()->setRight(NULL);
-	  delete end;
+      else if(current->getValue() == '(' || current->getValue() == ')') { 
+	if (newChar[i] == '(') {
+	  push(head, current->getValue());//push to the stack
 	}
 	else {
-	  head = NULL;
-	}
-      }
-    }
-    else {
-      if (head != NULL) {
-	while ((precedence[goToEnd()->getValue()] > precedence[current->getValue()]) ||
-	       (precedence[goToEnd()->getValue()] == precedence[current->getValue()] &&
-		goToEnd()->getValue() != '(')) {//check asscoiativity
-	  output.push_back(goToEnd()->getValue());
+	  while (goToEnd()->getValue() != '(' || goToEnd()->getValue() != ')') {
+	    output.push_back(goToEnd()->getValue());
+	    node* end = goToEnd();
+	    end->getLeft()->setRight(NULL);
+	    delete end;
+	  }
 	  node* end = goToEnd();
 	  if (end->getLeft() != NULL) {
 	    end->getLeft()->setRight(NULL);
@@ -73,11 +64,28 @@ void add (char* newChar, vector<char> &output) {
 	  }
 	  else {
 	    head = NULL;
-	    break;
 	  }
 	}
       }
-      push(head, current->getValue());
+      else {
+	if (head != NULL) {
+	  while ((precedence[goToEnd()->getValue()] > precedence[current->getValue()]) ||
+		 (precedence[goToEnd()->getValue()] == precedence[current->getValue()] &&
+		assoc[goToEnd()->getValue()] == 1) && goToEnd()->getValue() != '(') {//check asscoiativity
+	    output.push_back(goToEnd()->getValue());
+	    node* end = goToEnd();
+	    if (end->getLeft() != NULL) {
+	      end->getLeft()->setRight(NULL);
+	      delete end;
+	    }
+	    else {
+	      head = NULL;
+	      break;
+	    }
+	  }
+	}
+	push(head, current->getValue());
+      }
     }
   }
   while (head != NULL) {
@@ -94,18 +102,18 @@ void add (char* newChar, vector<char> &output) {
 }
 
 node* push (node* &head, char newChar) {
-  node* node1;
-  node1->setValue(newChar);
+  node* newNode = new node();
+  newNode->setValue(newChar);
   if (head == NULL) {
-    head = node1;
+    head = newNode;
     head->setRight(NULL);
-    node1->setLeft(NULL);
+    newNode->setLeft(NULL);
   }
   else {
     node* endNode = goToEnd();
-    endNode->setRight(node1);
-    node1->setRight(NULL);
-    node1->setLeft(endNode);
+    endNode->setRight(newNode);
+    newNode->setRight(NULL);
+    newNode->setLeft(endNode);
   }
   return head;
 }
