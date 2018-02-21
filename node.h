@@ -11,7 +11,9 @@ class node {
   void setRight(node*);
   void setLeft(node*);
   void setPrev(node*);
+  void setNext(node*);
   node* getPrev();
+  node* getNext();
   node* getRight();
   node* getLeft();
   char getValue();
@@ -20,5 +22,6 @@ class node {
   node* right;
   node* left;
   node* prev;
+  node* next;
 };
 #endif

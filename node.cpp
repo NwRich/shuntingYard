@@ -26,6 +26,10 @@ void node::setPrev(node* newPrev) {
   prev = newPrev;
 }
 
+void node::setNext(node* newNext) {
+  next = newNext;
+}
+
 node* node::getPrev() {
   return prev;
 }
@@ -39,4 +43,8 @@ node* node::getLeft() {
 
 char node::getValue() {
   return value;
+}
+
+node* node::getNext() {
+  return next;
 }
